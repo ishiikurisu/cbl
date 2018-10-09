@@ -1,0 +1,51 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PROBLEMA2.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL. SELECT ARQ-VENDAS ASSIGN TO './ENTRADA.TXT'
+                     ORGANIZATION IS LINE SEQUENTIAL.
+                     SELECT ARQ-IMP    ASSIGN TO './SAIDA.TXT'
+                     ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD ARQ-VENDAS LABEL RECORDS ARE STANDARD.
+       01 REG-VENDAS.
+          05 NOME-IN          PICTURE X(15).
+          05 QUANT-VENDAS-IN  PICTURE 999V99.
+       FD ARQ-IMP LABEL RECORDS ARE OMITTED.
+       01 REG-PRINT.
+          05                    PICTURE X(20).
+          05 NOME-OUT           PICTURE X(15).
+          05                    PICTURE X(20).
+          05 VALOR-COMISSAO-OUT PICTURE 99.99.
+          05                    PICTURE X(72).
+       WORKING-STORAGE SECTION.
+       01 EXISTEM-MAIS-REGISTROS PICTURE XXX VALUE 'SIM'.
+
+     ' PROCEDURE DIVISION.
+       MODULO-PRINCIPAL.
+           OPEN INPUT  ARQ-VENDAS
+                OUTPUT ARQ-IMP.
+
+           PERFORM UNTIL EXISTEM-MAIS-REGISTROS = 'NAO'
+               READ ARQ-VENDAS
+                   AT END
+                       MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS
+                   NOT AT END
+                       PERFORM ROTINA-COMISSAO
+           END-PERFORM
+           CLOSE ARQ-VENDAS
+                 ARQ-IMP
+           STOP RUN.
+
+       ROTINA-COMISSAO.
+           MOVE SPACES TO REG-PRINT
+           MOVE NOME-IN TO NOME-OUT
+           IF QUANT-VENDAS-IN IS GREATER THAN 100.00
+               MULTIPLY .03 BY QUANT-VENDAS-IN GIVING VALOR-COMISSAO-OUT
+           ELSE
+               MULTIPLY .01 BY QUANT-VENDAS-IN GIVING VALOR-COMISSAO-OUT
+           END-IF
+           WRITE REG-PRINT.
