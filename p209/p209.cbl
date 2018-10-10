@@ -105,4 +105,3 @@
                LINE 1 COLUMN 1.
 
        END PROGRAM CALC4.
-
