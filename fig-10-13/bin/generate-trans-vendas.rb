@@ -39,7 +39,7 @@ if __FILE__ == $0
           nr_vendedor = sellers.sample
         end
         day_sellers << nr_vendedor
-        valor_vendas = ('%5.5s' % prng.rand(0..99999).to_s).sub(' ', '0')
+        valor_vendas = ('%5.5s' % prng.rand(0..99999).to_s).gsub(' ', '0')
         line = "#{nr_day}#{nr_vendedor}#{valor_vendas}\n"
         file.write(line)
       end
