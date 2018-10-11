@@ -1,0 +1,29 @@
+                       RELATORIO MENSAL DE VENDAS       PAG.  1   11/10/2018
+
+                 DEPT-01
+
+            NR DO VENDEDOR               VLR TOTAL DE VENDAS
+
+                            001                       $889.89
+
+                            002                       $655.44
+
+                                               TOTAL DO DEPT - $1,545.33                       RELATORIO MENSAL DE VENDAS       PAG.  2   11/10/2018
+
+                 DEPT-31
+
+            NR DO VENDEDOR               VLR TOTAL DE VENDAS
+
+                            003                       $763.53
+
+                                               TOTAL DO DEPT -   $763.53                       RELATORIO MENSAL DE VENDAS       PAG.  3   11/10/2018
+
+                 DEPT-02
+
+            NR DO VENDEDOR               VLR TOTAL DE VENDAS
+
+                            001                     $1,022.15
+
+                            002                       $187.57
+
+                                               TOTAL DO DEPT - $1,209.72

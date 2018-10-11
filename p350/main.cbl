@@ -12,7 +12,9 @@
            SELECT ARQ-TRANS-IN
                ASSIGN TO 'G:\p350\bin\entrada.txt'
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT ARQ-RELAT-OUT ASSIGN TO PRINTER.
+           SELECT ARQ-RELAT-OUT
+               ASSIGN TO 'G:\p350\bin\saida.txt'
+               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
        FILE SECTION.
