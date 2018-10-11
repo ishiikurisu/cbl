@@ -1,7 +1,7 @@
 def generate_sellers prng
   sellers = []
   letters = ('A'..'Z').to_a.permutation(3).to_a
-  how_many_sellers = prng.rand(10..1000)
+  how_many_sellers = prng.rand(5..1000)
   
   how_many_sellers.times do
     maybe_seller = letters.sample.join
