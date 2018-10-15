@@ -1,0 +1,4 @@
+# RELATORIO DE VENDAS -- p01 DIA 15/10/2018
+
+NR | NOME VENDEDOR        | VENDAS TOTAIS
+---|----------------------|-----------
