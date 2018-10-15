@@ -21,15 +21,14 @@
        FILE SECTION.
        FD TRANS-VENDAS LABEL RECORDS ARE STANDARD.
        01 REG-VENDAS-IN.
-           05 NR-VENDEDOR PIC 99.
-           05 NOME-VENDEDOR PIC X(20).
-           05 VLR-VENDAS PIC 999V99.
+           05 NR-VENDEDOR-IN PIC 99.
+           05 NOME-VENDEDOR-IN PIC X(20).
+           05 VLR-VENDAS-IN PIC 999V99.
 
        FD RELATORIO-VENDAS LABEL RECORDS ARE OMITTED.
        01 REG-VENDAS-OUT PIC X(80).
 
        WORKING-STORAGE SECTION.
-      * TODO preencher esta parte
        01 CABECALHO-RELATORIO-1.
            05 PIC X(26) VALUE '# RELATORIO DE VENDAS -- p'.
            05 NR-PAG        PIC 99.
@@ -44,33 +43,40 @@
            05 PIC X(43) VALUE 'NR | NOME VENDEDOR        | VENDAS TOTAIS
       -''.
        01 CABECALHO-RELATORIO-3.
-           05 PIC X(43) VALUE '---|----------------------|-----------'.
-
+           05 PIC X(50) VALUE '---|----------------------|--------------
+      -'---'.
        01 REG-VENDEDOR-OUT.
-           05 NR-VENDEDOR-OUT PIC XX.
+           05 NR-VENDEDOR-OUT PIC 99.
            05 PIC X(3) VALUE ' | '.
            05 NOME-VENDEDOR-OUT PIC X(20).
            05 PIC X(3) VALUE ' | '.
            05 VENDAS-TOTAIS-OUT PIC $ZZZ,ZZZ.99.
+      * TODO add a footer to the report
 
        01 TABELA-VENDAS OCCURS 20 TIMES INDEXED BY NR-V.
            05 NOME-VENDEDOR PIC X(20).
-           05 VENDAS-TOTAIS-VENDEDOR PIC 9(6).99 VALUE ZERO.
+           05 VENDAS-TOTAIS PIC 9(6)V99.
 
        01 WS-DATA.
            05 WS-ANO PIC 9(4).
            05 WS-MES PIC 99.
            05 WS-DIA PIC 99.
        01 ULTIMO-REGISTRO PIC X VALUE 'N'.
-       01 VENDAS-TOTAIS PIC 99999v99.
-       01 TOTAL-SEMANAL PIC 999999v99.
+       01 VENDAS-COMPANHIA PIC 99999v99.
 
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
            OPEN INPUT TRANS-VENDAS
            OPEN OUTPUT RELATORIO-VENDAS
            PERFORM ESCREVER-CABECALHO
-      * TODO read the input file and process stuff
+           PERFORM UNTIL ULTIMO-REGISTRO = 'S'
+               READ TRANS-VENDAS
+                   AT END
+                       MOVE 'S' TO ULTIMO-REGISTRO
+                   NOT AT END
+                       PERFORM CONTABILIZAR-VENDA
+           END-PERFORM
+           PERFORM ESCREVER-RELATORIO
            CLOSE TRANS-VENDAS RELATORIO-VENDAS
            STOP RUN.
 
@@ -90,5 +96,26 @@
            WRITE REG-VENDAS-OUT
                FROM CABECALHO-RELATORIO-3
                AFTER ADVANCING 1 LINE.
+
+      ******************************************************************
+      * Adiciona uma venda aa tabela de acumulacao
+      ******************************************************************
+       CONTABILIZAR-VENDA.
+           MOVE NOME-VENDEDOR-IN TO NOME-VENDEDOR(NR-VENDEDOR-IN)
+           ADD VLR-VENDAS-IN TO VENDAS-TOTAIS(NR-VENDEDOR-IN).
+
+      ******************************************************************
+      * Escreve a tabela de vendas de acordo com o calculado
+      ******************************************************************
+       ESCREVER-RELATORIO.
+           PERFORM VARYING NR-V FROM 1 BY 1 UNTIL NR-V > 20
+               MOVE NR-V TO NR-VENDEDOR-OUT
+               MOVE NOME-VENDEDOR(NR-V) TO NOME-VENDEDOR-OUT
+               MOVE VENDAS-TOTAIS(NR-V) TO VENDAS-TOTAIS-OUT
+
+               WRITE REG-VENDAS-OUT
+                   FROM REG-VENDEDOR-OUT
+                   AFTER ADVANCING 1 LINE
+           END-PERFORM.
 
        END PROGRAM PAGE-461.

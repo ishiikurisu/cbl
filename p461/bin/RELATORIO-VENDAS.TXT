@@ -1,4 +1,24 @@
 # RELATORIO DE VENDAS -- p01 DIA 15/10/2018
 
 NR | NOME VENDEDOR        | VENDAS TOTAIS
----|----------------------|-----------
+---|----------------------|-----------------
+01 | Leandro Swims        | $197,476.33
+02 | Shelba Elrod         | $234,986.99
+03 | Nanci Eidem          | $198,842.64
+04 | Calandra Tancredi    | $212,049.34
+05 | Rachelle Caryl       | $206,770.13
+06 | Tiffani Red          | $187,205.38
+07 | Reyes Waters         | $216,061.59
+08 | Delicia Schwarz      | $212,507.49
+09 | Janene Crumb         | $219,608.75
+10 | Harry Higginbotham   | $219,935.82
+11 | Christiane Stiff     | $198,084.30
+12 | Columbus Hattaway    | $216,973.17
+13 | Benny Keegan         | $227,035.77
+14 | Foster Mulcahy       | $202,271.75
+15 | Magaly Danna         | $204,153.54
+16 | Ayako Lukasiewicz    | $216,312.57
+17 | Beatrice Espitia     | $210,151.33
+18 | Deidra Basham        | $199,108.57
+19 | Harmony Hermosillo   | $197,959.26
+20 | Milford Vantassel    | $214,231.76
