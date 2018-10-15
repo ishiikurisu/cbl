@@ -30,7 +30,7 @@ if __FILE__ == $0
   prng = Random.new
   sellers = generate_sellers prng
   
-  File.open('trans-vendas.txt', 'w') do |file|
+  File.open('trans-vendas.db', 'w') do |file|
     for nr_day in 1..5 do
       day_sellers = []
       prng.rand(1..sellers.size).times do
