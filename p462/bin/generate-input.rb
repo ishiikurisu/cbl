@@ -15,7 +15,7 @@ def generate_salary_table
     how_many.times do
       nr += 1
       nr_empregado = nr.to_s.rjust(5, '0')
-      nome_empregado = (0..20).map { ('a'..'z').to_a[rand(26)] }.join
+      nome_empregado = (0...20).map { ('a'..'z').to_a[rand(26)] }.join
       salario_anual = prng.rand(1000..12000).to_s.rjust(5, '0')
       nr_dependentes = prng.rand(0..15).to_s.rjust(2, '0')
 
@@ -24,11 +24,11 @@ def generate_salary_table
     10.times do
       nr += 1
       nr_empregado = nr.to_s.rjust(5, '0')
-      nome_empregado = (0..20).map { ('a'..'z').to_a[rand(26)] }.join
+      nome_empregado = (0...20).map { ('a'..'z').to_a[rand(26)] }.join
       salario_anual = prng.rand(12001..99999).to_s.rjust(5, '0')
       nr_dependentes = '00'
 
-      file.write "#{nr_empregado}#{nome_empregado}  #{salario_anual}    #{nr_dependentes}\n"
+      file.write "#{nr_empregado}#{nome_empregado}  #{salario_anual}        #{nr_dependentes}\n"
     end
   end
 end
