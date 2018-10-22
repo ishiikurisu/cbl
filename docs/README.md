@@ -19,7 +19,9 @@
     - `PROCEDURE DIVISION` → contém as instruções necessárias para a leitura e processamento dos dados de entrada e criação da saída;
 - Variáveis no COBOL são declaradas da seguinte forma:
 
-    <nível = 01> <nome da variável> PICTURE <formato>
+```
+<nível = 01> <nome da variável> PICTURE <formato>
+```
 
 por exemplo:
 
@@ -53,16 +55,20 @@ por exemplo:
 - Existem dois tipos de entrada no COBOL. Divisões, seções e parágrafos devem começar na área A enquanto sentenças e instruções devem começar na área B. Sentenças terminam com um ponto, que deve sempre ser seguido de pelo menos um espaço; podem aparecer em linhas com ou sem outras entradas; e consiste de uma instrução ou em uma série de instruções.
 - A `IDENTIFICATION DIVISION` é dividida em parágrafos e não em seções e serve para identificar o programa. Deve conter pelo menos o `PROGRAM-ID.` As duas primeiras entradas de um programa COBOL devem ser sempre como segue:
 
-    IDENTIFICATION DIVISION.
-    PROGRAM-ID. <nome-do-programa>.
+```
+IDENTIFICATION DIVISION.
+PROGRAM-ID. <nome-do-programa>.
+```
 
 - A `ENVIRONMENT DIVISION` é composta por duas seções: `CONFIGURATION` e `INPUT-OUTPUT SECTION`. A `CONFIGURATION SECTION` indica os `SOURCE-COMPUTER` e `OBJECT-COMPUTER`. Esta seção pode ser omitida em compiladores COBOL 85 e há formas de fazer o mesmo para o COBOL 74. A `INPUT-OUTPUT SECTION` pode conter um parágrafo chamado `FILE-CONTROL`, que consiste de instruções `SELECT` na área B seguindo o formato: `SELECT nome-do-arquivo ASSIGN TO <especificacao-do-dispositivo> [ORGANIZATION IS LINE-SEQUENTIAL].` Desta forma, pode-se ter acesso a arquivos e dispositivos externos. A especificação do dispositivo depende do equipamento e é responsabilidade dos técnicos de TI da empresa.
 
-    ENVIRONMENT DIVISION.
-    INPUT-OUTPUT SECTION.
-    FILE-CONTROL.
-    SELECT ARQUIVO-TRANSACOES ASSIGN TO DISK 'DADOS1.DAT'
-    SELECT ARQUIVO-RELATORIO ASSIGN TO PRINTER.
+```
+ENVIRONMENT DIVISION.
+INPUT-OUTPUT SECTION.
+FILE-CONTROL.
+SELECT ARQUIVO-TRANSACOES ASSIGN TO DISK 'DADOS1.DAT'
+SELECT ARQUIVO-RELATORIO ASSIGN TO PRINTER.
+```
 
 # Capítulo 3
 
@@ -71,87 +77,97 @@ por exemplo:
 - Um registro é uma unidade de informação que consiste em itens de dados relacionados entre si dentro de um arquivo. Muito frequentemente, um arquivo é composto de registros que possuem o mesmo comprimento e formato (os chamados *fixed-length records*). A definição de um registro em COBOL permite o uso de vários níveis numerados (começando pelo 01 e geralmente incrementando de 5 em 5 para para níveis para específicos) a partir do `FD`. Cada campo em um registro pode ser descrito por uma `PICTURE` com o tipo dos dados.
 - As variáveis em COBOL podem ser de 3 tipos: alfabéticos (`A`), alfanuméricos (`X`) ou numéricos (`9`). Números podem ser lidos com um separador decimal implícito (`v`) e podem ser negativos (`S`).
 
-    DATA DIVISION.
-    FILE SECTION.
-    FD ARQ-VENDAS LABEL RECORDS ARE STANDARD.
-    01 REG-VENDAS.
-        05 NOME-IN          PICTURE X(15).
-        05 QUANT-VENDAS-IN  PICTURE 999V99.
-    FD ARQ-IMP LABEL RECORDS ARE OMITTED.
-    01 REG-PRINT.
-        05                    PICTURE X(20).
-        05 NOME-OUT           PICTURE X(15).
-        05                    PICTURE X(20).
-        05 VALOR-COMISSAO-OUT PICTURE 99.99.
-        05                    PICTURE X(72).
-    WORKING-STORAGE SECTION.
-    01 EXISTEM-MAIS-REGISTROS PICTURE XXX VALUE 'SIM'.
+```
+DATA DIVISION.
+FILE SECTION.
+FD ARQ-VENDAS LABEL RECORDS ARE STANDARD.
+01 REG-VENDAS.
+    05 NOME-IN          PICTURE X(15).
+    05 QUANT-VENDAS-IN  PICTURE 999V99.
+FD ARQ-IMP LABEL RECORDS ARE OMITTED.
+01 REG-PRINT.
+    05                    PICTURE X(20).
+    05 NOME-OUT           PICTURE X(15).
+    05                    PICTURE X(20).
+    05 VALOR-COMISSAO-OUT PICTURE 99.99.
+    05                    PICTURE X(72).
+WORKING-STORAGE SECTION.
+01 EXISTEM-MAIS-REGISTROS PICTURE XXX VALUE 'SIM'.
+```
 
 # Capítulo 4
 
 - A `PROCEDURE DIVISION` é a parte do nosso código que conterá todas as instruções para o nosso programa manipular os dados declarados na `DATA DIVISION`, e é composta por parágrafos (na área A) com instruções (na área B). Dois parágrafos não podem ter o mesmo nome. Todas as instruções começam com algum verbo ou com um condicional. O primeiro parágrafo é o primeiro a ser executado e o programa só para ao executar uma instrução `STOP RUN.`. Por este motivo, o COBOL promove uma estruturação Top-Down para o código.
 - O módulo principal quase sempre consiste de um loop para ler todas as linhas de um arquivo e gerar uma saída:
 
-    PROCEDURE-DIVISION.
-    100-MODULO-PRINCIPAL.
-        OPEN INPUT ARQUIVO-INVENTARIO
-             OUTPUT ARQUIVO-PAGAMENTO
-        PERFORM UNTIL EXISTEM-MAIS-REGISTROS = 'NAO'
-            READ ARQUIVO-INVENTARIO
-                AT END
-                    MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS
-                NOT AT END
-                    PERFORM 200-ROTINA-PROCESSAMENTO
-        END-PERFORM
-        CLOSE ARQUIVO-INVENTARIO
-              ARQUIVO-PAGAMENTO
-        STOP RUN.
-    200-ROTINA-PROCESSAMENTO.
-        ...
+```
+PROCEDURE-DIVISION.
+100-MODULO-PRINCIPAL.
+    OPEN INPUT ARQUIVO-INVENTARIO
+            OUTPUT ARQUIVO-PAGAMENTO
+    PERFORM UNTIL EXISTEM-MAIS-REGISTROS = 'NAO'
+        READ ARQUIVO-INVENTARIO
+            AT END
+                MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS
+            NOT AT END
+                PERFORM 200-ROTINA-PROCESSAMENTO
+    END-PERFORM
+    CLOSE ARQUIVO-INVENTARIO
+            ARQUIVO-PAGAMENTO
+    STOP RUN.
+200-ROTINA-PROCESSAMENTO.
+    ...
+```
 
 - No caso do COBOL 74, o mesmo trecho de código precisa ser estruturado de uma forma ligeiramente diferente, já que ele não dá suporte para programação estruturada:
 
-    PROCEDURE-DIVISION.
-    100-MODULO-PRINCIPAL.
-        OPEN INPUT ARQUIVO-INVENTARIO.
-        OPEN OUTPUT ARQUIVO-PAGAMENTO.
-        READ ARQUIVO-INVENTARIO
-            AT END MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS.
-        PERFORM 200-ROTINA-PROCESSAMENTO 
-            UNTIL EXISTEM-REGISTROS = 'NAO'.
-        CLOSE ARQUIVO-INVENTARIO.
-        CLOSE ARQUIVO-PAGAMENTO.
-        STOP RUN.
-    200-ROTINA-PROCESSAMENTO.
-        ...
-        READ ARQUIVO-INVENTARIO
-            AT END MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS.
+```
+PROCEDURE-DIVISION.
+100-MODULO-PRINCIPAL.
+    OPEN INPUT ARQUIVO-INVENTARIO.
+    OPEN OUTPUT ARQUIVO-PAGAMENTO.
+    READ ARQUIVO-INVENTARIO
+        AT END MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS.
+    PERFORM 200-ROTINA-PROCESSAMENTO 
+        UNTIL EXISTEM-REGISTROS = 'NAO'.
+    CLOSE ARQUIVO-INVENTARIO.
+    CLOSE ARQUIVO-PAGAMENTO.
+    STOP RUN.
+200-ROTINA-PROCESSAMENTO.
+    ...
+    READ ARQUIVO-INVENTARIO
+        AT END MOVE 'NAO' TO EXISTEM-MAIS-REGISTROS.
+```
 
 - O COBOL conta com alguns comandos lógico-aritméticos:
 
-    ADD x TO y [GIVING z]
-    SUBTRACT x TO y [GIVING z]
-    MULTIPLY x TO y [GIVING z]
-    DIVIDE x TO y [GIVING z]
-    
-    IF x = y [ou x > y ou x < y] 
-        ...
-    ELSE
-        ...
-    END-IF
+```
+ADD x TO y [GIVING z]
+SUBTRACT x TO y [GIVING z]
+MULTIPLY x TO y [GIVING z]
+DIVIDE x TO y [GIVING z]
+
+IF x = y [ou x > y ou x < y] 
+    ...
+ELSE
+    ...
+END-IF
+```
 
 # Capítulo 6
 
 - Quando definimos o tipo de uma variável por meio de uma PICTURE no COBOL, podemos ver duas situações ao tentar tirar ou colocar um valor lá dentro. Vamos pensar que vamos atribuir um valor a um variável qualquer: se as PIC forem iguais, então a atribuição direta. Caso contrário, haverá conversão de valores. Campos alfanuméricos podem ser truncados ou preenchidos com espaços dependendo da necessidade, sendo sempre lidos da esquerda para a direita. Campos numéricos são tratados em duas partes. A parte inteira será truncada ou preenchida com 0 (lidos da direita para a esquerda), assim como a parte decimal (da esquerda para a direita).
 - Propriedades internas de registros podem ser acessadas por meio da palavra OF:
 
-     01 SOBRE-PAI
-         05 ESTADO-CIVIL
-         05 SEXO
-     01 SOBRE-FILHO
-        05 SEXO
-    * possível atribuição para campos de mesmo nome
-     MOVE SEXO OF SOBRE-PAI TO SEXO OF SOBRE-FILHO
+```
+01 SOBRE-PAI
+    05 ESTADO-CIVIL
+    05 SEXO
+01 SOBRE-FILHO
+05 SEXO
+* possível atribuição para campos de mesmo nome
+MOVE SEXO OF SOBRE-PAI TO SEXO OF SOBRE-FILHO
+```
 
 - Alguns símbolos podem ser usados para formatar campos de saída: `Z` para preencher zeros à esquerda em números ou `*` para proteções de cheque; `B` para espaços em números e alfanuméricos. Formatações podem conter `/`, `$`, e outros alfanuméricos para complementar o embelezamento de uma saída. Algumas saídas podem ser suprimidas dizendo que uma `PICTURE` é `BLANK WHEN ZERO`. Podemos justificar partes do texto com `JUSTIFIED RIGHT` que serão escritas com a borda direita no canto direito.
 - Podemos utilizar a tela do computador para interagir com o usuário por meio de entradas e saídas. Podemos escrever texto na tela com `DISPLAY` e pedir entradas por meio de `ACCEPT`, que aceita inclusive entradas diversas como `DATE` para poder receber uma *string* com o dia atual no formato "YYMMDD". Podemos utilizar também uma seção chamada `SCREEN SECTION` na `DATA DIVISION` para poder descrever interações na tela com o usuário.
@@ -184,18 +200,20 @@ por exemplo:
 
 - O nível 88 é reservado a constantes que podem ser utilizadas em um determinado registro e não possuem `PICTURE`, somente `VALUE`.
 
-    EVALUATE ANOS-FACULDADE-IN
-        WHEN 1
-            PERFORM RTN-CALOURO
-        WHEN 2
-            PERFORM RTN-SEG-ANO
-        WHEN 3
-            PERFORM RTN-TER-ANO
-        WHEN 4
-            PERFORM RTN-VETERANO
-        WHEN OTHER
-            PERFORM RTN-ERROR
-    END-EVALUATE
+```
+EVALUATE ANOS-FACULDADE-IN
+    WHEN 1
+        PERFORM RTN-CALOURO
+    WHEN 2
+        PERFORM RTN-SEG-ANO
+    WHEN 3
+        PERFORM RTN-TER-ANO
+    WHEN 4
+        PERFORM RTN-VETERANO
+    WHEN OTHER
+        PERFORM RTN-ERROR
+END-EVALUATE
+```
 
 # Capítulo 9
 
@@ -223,32 +241,34 @@ por exemplo:
 
 - Bonus search: COBOL tables:
 
-    IDENTIFICATION DIVISION.
-    PROGRAM-ID. HELLO.
-    
-    DATA DIVISION.
-       WORKING-STORAGE SECTION.
-       01 WS-TABLE.
-          05 WS-A OCCURS 3 TIMES.
-             10 WS-B PIC A(2).
-             10 WS-C OCCURS 2 TIMES.
-                15 WS-D PIC X(3).
-    
-    PROCEDURE DIVISION.
-       MOVE '12ABCDEF34GHIJKL56MNOPQR' TO WS-TABLE.
-       DISPLAY 'WS-TABLE  : ' WS-TABLE.
-       DISPLAY 'WS-A(1)   : ' WS-A(1).
-       DISPLAY 'WS-C(1,1) : ' WS-C(1,1).
-       DISPLAY 'WS-C(1,2) : ' WS-C(1,2).
-       DISPLAY 'WS-A(2)   : ' WS-A(2).
-       DISPLAY 'WS-C(2,1) : ' WS-C(2,1).
-       DISPLAY 'WS-C(2,2) : ' WS-C(2,2).
-       DISPLAY 'WS-A(3)   : ' WS-A(3).
-       DISPLAY 'WS-C(3,1) : ' WS-C(3,1).
-       DISPLAY 'WS-C(3,2) : ' WS-C(3,2).
-       STOP RUN.
-    
-    END-PROGRAM HELLO.
+```
+IDENTIFICATION DIVISION.
+PROGRAM-ID. HELLO.
+
+DATA DIVISION.
+    WORKING-STORAGE SECTION.
+    01 WS-TABLE.
+        05 WS-A OCCURS 3 TIMES.
+            10 WS-B PIC A(2).
+            10 WS-C OCCURS 2 TIMES.
+            15 WS-D PIC X(3).
+
+PROCEDURE DIVISION.
+    MOVE '12ABCDEF34GHIJKL56MNOPQR' TO WS-TABLE.
+    DISPLAY 'WS-TABLE  : ' WS-TABLE.
+    DISPLAY 'WS-A(1)   : ' WS-A(1).
+    DISPLAY 'WS-C(1,1) : ' WS-C(1,1).
+    DISPLAY 'WS-C(1,2) : ' WS-C(1,2).
+    DISPLAY 'WS-A(2)   : ' WS-A(2).
+    DISPLAY 'WS-C(2,1) : ' WS-C(2,1).
+    DISPLAY 'WS-C(2,2) : ' WS-C(2,2).
+    DISPLAY 'WS-A(3)   : ' WS-A(3).
+    DISPLAY 'WS-C(3,1) : ' WS-C(3,1).
+    DISPLAY 'WS-C(3,2) : ' WS-C(3,2).
+    STOP RUN.
+
+END-PROGRAM HELLO.
+```
 
 # Capítulo 11
 
@@ -256,27 +276,30 @@ por exemplo:
 
 - A instrução `INSPECT` pode ser usada para validar strings. Em seu primeiro formato, ela pode ser usada para contar quantas vezes um determinado caractere aparece, como indicado a seguir:
 
-    INSPECT item TALLYING ctr FOR ALL SPACES
-    INSPECT item TALLYING ctr
-    						 FOR CHARACTERS 
-                 BEFORE INITIAL SPACE
-    INSPECT item TALLYING ctr FOR LEADING ZEROS
-    ***************************************************
-    INSPECT DATA-IN REPLACING ALL '-' BY '/'
-    INSPECT NRSS REPLACING ALL SPACES BY '-'
-    INSPECT ITEM REPLACING CHARACTERS BY '3' 
-                 BEFORE INITIAL '2'
-    ***************************************************
-    01 ALFA-MINUS PIC X(26)
-        VALUE 'abcdefghijlkmnopqrstuvwyz'
-    01 ALFA-MAIUS PIC X(26)
-        VALUE 'ABCDEFGHIJLKMNOPQRSTUVWYZ'
-    INSPECT CAMPO CONVERTING ALFA-MINUS TO ALFA-MAIUS
+```
+INSPECT item TALLYING ctr FOR ALL SPACES
+INSPECT item TALLYING ctr
+                            FOR CHARACTERS 
+                BEFORE INITIAL SPACE
+INSPECT item TALLYING ctr FOR LEADING ZEROS
+***************************************************
+INSPECT DATA-IN REPLACING ALL '-' BY '/'
+INSPECT NRSS REPLACING ALL SPACES BY '-'
+INSPECT ITEM REPLACING CHARACTERS BY '3' 
+                BEFORE INITIAL '2'
+***************************************************
+01 ALFA-MINUS PIC X(26)
+    VALUE 'abcdefghijlkmnopqrstuvwyz'
+01 ALFA-MAIUS PIC X(26)
+    VALUE 'ABCDEFGHIJLKMNOPQRSTUVWYZ'
+INSPECT CAMPO CONVERTING ALFA-MINUS TO ALFA-MAIUS
+```
     
 
 # Capítulo 12
 
 A cláusula `OCCURS` é usada no COBOL para declarar *arrays*, isto é, campos do mesmo formato com **ocorrência** repetida. `05 TEMPERATURA OCCURS 24 TIMES PIC S9(3)` é um exemplo de declaração de array. Para acessar dados de um array, usamos um subscrito iniciando em 1: `MOVE TEMPERATURA(2) TO TEMP-OUT` ou `DISPLAY TEMPERATURA(23)` , por exemplo. Não há alocação dinâmica de memória em COBOL, então todos os arrays devem ser declaradas de tal forma a conter toda a informação que o programador considerar necessária.
+
 
     * em COBOL, uma tabela é um array de registros
     01 TABELA-IMPOSTOS-VENDAS
