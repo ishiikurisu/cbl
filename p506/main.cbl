@@ -83,13 +83,13 @@
                10 PIC XXX VALUE ' | '.
                10 COMISSAO-OUT PIC $Z,ZZZ.99.
                10 PIC XXX VALUE ' | '.
-           05 VALORES-ANO-ATUAL-OUT.
+           05 VALORES-PER-ATUAL-OUT.
                10 VENDAS-OUT PIC $Z,ZZZ.99.
                10 PIC XXX VALUE ' | '.
                10 COMISSAO-OUT PIC $Z,ZZZ.99.
                10 PIC XXX VALUE ' | '.
            05 SITUACAO-PROCESSO-OUT PIC X(18).
-           05 VALUE ' | '.
+           05 PIC XXX VALUE ' | '.
 
       * variaveis
        01 WS-DATA.
@@ -154,6 +154,7 @@
       ******************************************************************
        SETUP-ATUALIZAR-REGISTROS.
            READ MESTRE-VENDAS.
+           MOVE 'SEM REGISTRO' TO SITUACAO-PROCESSO-OUT.
 
 
       ******************************************************************
@@ -161,13 +162,39 @@
       ******************************************************************
        ATUALIZAR-REGISTROS.
            IF NR-VENDEDOR-IN IS NOT EQUAL TO NR-VENDEDOR THEN
-               WRITE REG-MESTRE-VENDAS-ATUAL
-                   FROM REG-MESTRE-VENDAS
+               WRITE REG-LISTAGEM-CONTROLE
+                   FROM REG-MESTRE-OUT
                    AFTER ADVANCING 1 LINE
-              PERFORM SETUP-ATUALIZAR-REGISTROS
+               PERFORM ESCREVER-LISTAGEM-CONTROLE
+               PERFORM ESCREVER-ARQUIVO-MESTRE
+               PERFORM SETUP-ATUALIZAR-REGISTROS
            END-IF
            ADD VENDAS-IN TO VENDAS OF VALORES-PER-ATUAL
            ADD COMISSAO-IN TO COMISSAO OF VALORES-PER-ATUAL.
 
+
+
+      ******************************************************************
+      * escreve atualizacoes no arquivo mestre
+      ******************************************************************
+       ESCREVER-ARQUIVO-MESTRE.
+           WRITE REG-MESTRE-VENDAS-ATUAL
+               FROM REG-MESTRE-VENDAS
+               AFTER ADVANCING 1 LINE.
+
+      ******************************************************************
+      * escreve atualizacoes no arquivo mestre
+      ******************************************************************
+       ESCREVER-LISTAGEM-CONTROLE.
+           MOVE NR-VENDEDOR-IN TO NR-VENDEDOR-OUT
+           MOVE 0 TO VENDAS-OUT OF VALORES-ANO-ANT-OUT
+           MOVE 0 TO COMISSAO-OUT OF VALORES-ANO-ANT-OUT
+           MOVE VENDAS OF VALORES-PER-ATUAL
+                TO VENDAS-OUT OF VALORES-PER-ATUAL-OUT
+           MOVE COMISSAO OF VALORES-PER-ATUAL
+                TO COMISSAO-OUT OF VALORES-PER-ATUAL-OUT
+           WRITE REG-LISTAGEM-CONTROLE
+               FROM REG-MESTRE-OUT
+               AFTER ADVANCING 1 LINE.
 
        END PROGRAM PAGE-506.

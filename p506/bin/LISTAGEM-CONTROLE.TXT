@@ -1,7 +1,0 @@
-
-
-# LISTAGEM DE CONTROLE PARA ATUALIZACAO DE VENDAS -- p001 DIA 22/10/2018
-
-| NR. VENDEDOR | ANO ANTERIOR          | VALORES ATUAIS       | PROCESSO REALIZADO |
-|              | VENDAS    | COMISSAO  | VENDAS   | COMISSAO  |                    |
-|--------------|-----------|-----------|----------|-----------|--------------------|
