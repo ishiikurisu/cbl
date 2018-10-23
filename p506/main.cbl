@@ -11,16 +11,16 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
        SELECT MESTRE-VENDAS
-           ASSIGN TO '.\MESTRE-VENDAS.CBDB'
+           ASSIGN TO 'E:\p506\bin\MESTRE-VENDAS.CBDB'
            ORGANIZATION IS LINE SEQUENTIAL.
        SELECT TRANS-VENDAS
-           ASSIGN TO '.\TRANS-VENDAS.CBDB'
+           ASSIGN TO 'E:\p506\bin\TRANS-VENDAS.CBDB'
            ORGANIZATION IS LINE SEQUENTIAL.
        SELECT LISTAGEM-CONTROLE
-           ASSIGN TO '.\LISTAGEM-CONTROLE.MD'
+           ASSIGN TO 'E:\p506\bin\LISTAGEM-CONTROLE.MD'
            ORGANIZATION IS LINE SEQUENTIAL.
        SELECT MESTRE-VENDAS-ATUAL
-           ASSIGN TO '.\MESTRE-VENDAS-ATUAL.CBDB'
+           ASSIGN TO 'E:\p506\bin\MESTRE-VENDAS-ATUAL.CBDB'
            ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -96,7 +96,8 @@
            05 WS-ANO PIC 9(4).
            05 WS-MES PIC 99.
            05 WS-DIA PIC 99.
-       01 WS-ULTIMO-REGISTRO PIC X VALUE 'N'.
+       01 WS-ULTIMO-REGISTRO-MESTRE PIC X.
+       01 WS-ULTIMO-REGISTRO-TRANS PIC X.
        01 WS-REGISTROS-POR-PAGINA PIC 99.
        01 WS-NR-PAG PIC 999 VALUE 1.
        01 WS-MUDOU-REGISTRO-ATUAL PIC X.
@@ -112,14 +113,15 @@
            OPEN OUTPUT LISTAGEM-CONTROLE
            OPEN OUTPUT MESTRE-VENDAS-ATUAL
            PERFORM ESCREVER-CABECALHO
-           PERFORM SETUP-ATUALIZAR-REGISTROS
-           MOVE 'N' TO WS-ULTIMO-REGISTRO
-           PERFORM UNTIL WS-ULTIMO-REGISTRO = 'S'
-               READ TRANS-VENDAS
+           PERFORM SETUP-LOOP-REGISTROS-MESTRE
+           MOVE 'N' TO WS-ULTIMO-REGISTRO-MESTRE
+           MOVE 'N' TO WS-ULTIMO-REGISTRO-TRANS
+           PERFORM UNTIL WS-ULTIMO-REGISTRO-MESTRE = 'S'
+               READ MESTRE-VENDAS
                    AT END
-                       MOVE 'S' TO WS-ULTIMO-REGISTRO
+                       MOVE 'S' TO WS-ULTIMO-REGISTRO-MESTRE
                    NOT AT END
-                       PERFORM ATUALIZAR-REGISTROS
+                       PERFORM ATUALIZAR-REGISTROS-MESTRE
            END-PERFORM
       * TODO write remaining master file
            CLOSE MESTRE-VENDAS
@@ -150,30 +152,6 @@
                FROM CABECALHO-RELATORIO-4
                AFTER ADVANCING 1 LINE.
 
-
-      ******************************************************************
-      * prepara o ambiente para a leitura dos registros de transacoes
-      ******************************************************************
-       SETUP-ATUALIZAR-REGISTROS.
-           READ MESTRE-VENDAS.
-           MOVE 'SEM REGISTRO' TO SITUACAO-PROCESSO-OUT.
-
-
-      ******************************************************************
-      * atualiza o registro mestre dependendo da transacao atual
-      ******************************************************************
-       ATUALIZAR-REGISTROS.
-           IF NR-VENDEDOR-IN IS NOT EQUAL TO NR-VENDEDOR THEN
-               PERFORM UNTIL NR-VENDEDOR-IN IS EQUAL TO NR-VENDEDOR
-                   PERFORM ESCREVER-LISTAGEM-CONTROLE
-                   PERFORM ESCREVER-ARQUIVO-MESTRE
-                   PERFORM SETUP-ATUALIZAR-REGISTROS
-               END-PERFORM
-           END-IF
-           ADD VENDAS-IN TO VENDAS OF VALORES-PER-ATUAL
-           ADD COMISSAO-IN TO COMISSAO OF VALORES-PER-ATUAL
-           MOVE 'ATUALIZAO' TO SITUACAO-PROCESSO-OUT.
-
       ******************************************************************
       * escreve atualizacoes no arquivo mestre
       ******************************************************************
@@ -186,7 +164,7 @@
       * escreve atualizacoes no arquivo mestre
       ******************************************************************
        ESCREVER-LISTAGEM-CONTROLE.
-           MOVE NR-VENDEDOR-IN TO NR-VENDEDOR-OUT
+           MOVE NR-VENDEDOR TO NR-VENDEDOR-OUT
            MOVE 0 TO VENDAS-OUT OF VALORES-ANO-ANT-OUT
            MOVE 0 TO COMISSAO-OUT OF VALORES-ANO-ANT-OUT
            MOVE VENDAS OF VALORES-PER-ATUAL
@@ -196,5 +174,35 @@
            WRITE REG-LISTAGEM-CONTROLE
                FROM REG-MESTRE-OUT
                AFTER ADVANCING 1 LINE.
+
+      ******************************************************************
+      * atualiza um registro do arquivo mestre por meio da análise das
+      * transacoes relacionadas a um vendedor
+      ******************************************************************
+       SETUP-LOOP-REGISTROS-MESTRE.
+           READ TRANS-VENDAS
+               AT END
+                   MOVE 'S' TO WS-ULTIMO-REGISTRO-TRANS.
+
+      ******************************************************************
+      * atualiza um registro do arquivo mestre por meio da análise das
+      * transacoes relacionadas a um vendedor
+      ******************************************************************
+       ATUALIZAR-REGISTROS-MESTRE.
+      * setup
+           MOVE 'SEM REGISTRO' TO SITUACAO-PROCESSO-OUT
+           PERFORM UNTIL (NR-VENDEDOR IS NOT EQUAL NR-VENDEDOR-IN) OR
+                         (WS-ULTIMO-REGISTRO-TRANS IS EQUAL TO 'S')
+      * updating current master register
+               MOVE 'ATUALIZACAO' TO SITUACAO-PROCESSO-OUT
+               ADD VENDAS-IN TO VENDAS OF VALORES-PER-ATUAL
+               ADD COMISSAO-IN TO COMISSAO OF VALORES-PER-ATUAL
+
+      * reading new transaction
+               READ TRANS-VENDAS
+                   AT END MOVE 'S' TO WS-ULTIMO-REGISTRO-TRANS
+           END-PERFORM
+           PERFORM ESCREVER-ARQUIVO-MESTRE
+           PERFORM ESCREVER-LISTAGEM-CONTROLE.
 
        END PROGRAM PAGE-506.
