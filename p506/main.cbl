@@ -99,7 +99,7 @@
        01 WS-ULTIMO-REGISTRO PIC X VALUE 'N'.
        01 WS-REGISTROS-POR-PAGINA PIC 99.
        01 WS-NR-PAG PIC 999 VALUE 1.
-       01 WS-MUDOU-REGISTRO-ATUAL PIC X VALUE 'N'.
+       01 WS-MUDOU-REGISTRO-ATUAL PIC X.
 
        PROCEDURE DIVISION.
       ******************************************************************
@@ -113,6 +113,7 @@
            OPEN OUTPUT MESTRE-VENDAS-ATUAL
            PERFORM ESCREVER-CABECALHO
            PERFORM SETUP-ATUALIZAR-REGISTROS
+           MOVE 'N' TO WS-ULTIMO-REGISTRO
            PERFORM UNTIL WS-ULTIMO-REGISTRO = 'S'
                READ TRANS-VENDAS
                    AT END
@@ -120,6 +121,7 @@
                    NOT AT END
                        PERFORM ATUALIZAR-REGISTROS
            END-PERFORM
+      * TODO write remaining master file
            CLOSE MESTRE-VENDAS
                  TRANS-VENDAS
                  LISTAGEM-CONTROLE
@@ -162,17 +164,15 @@
       ******************************************************************
        ATUALIZAR-REGISTROS.
            IF NR-VENDEDOR-IN IS NOT EQUAL TO NR-VENDEDOR THEN
-               WRITE REG-LISTAGEM-CONTROLE
-                   FROM REG-MESTRE-OUT
-                   AFTER ADVANCING 1 LINE
-               PERFORM ESCREVER-LISTAGEM-CONTROLE
-               PERFORM ESCREVER-ARQUIVO-MESTRE
-               PERFORM SETUP-ATUALIZAR-REGISTROS
+               PERFORM UNTIL NR-VENDEDOR-IN IS EQUAL TO NR-VENDEDOR
+                   PERFORM ESCREVER-LISTAGEM-CONTROLE
+                   PERFORM ESCREVER-ARQUIVO-MESTRE
+                   PERFORM SETUP-ATUALIZAR-REGISTROS
+               END-PERFORM
            END-IF
            ADD VENDAS-IN TO VENDAS OF VALORES-PER-ATUAL
-           ADD COMISSAO-IN TO COMISSAO OF VALORES-PER-ATUAL.
-
-
+           ADD COMISSAO-IN TO COMISSAO OF VALORES-PER-ATUAL
+           MOVE 'ATUALIZAO' TO SITUACAO-PROCESSO-OUT.
 
       ******************************************************************
       * escreve atualizacoes no arquivo mestre
