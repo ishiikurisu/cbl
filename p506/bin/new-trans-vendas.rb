@@ -7,7 +7,7 @@ if __FILE__ == $0
       how_many_sells = sells.sample
       unless how_many_sells == 0
         how_many_sells.times do
-          v = prng.rand 1...999999
+          v = prng.rand 1...9999
           c = v * 0.10
           vendas = v.to_s.rjust 6, '0'
           comissao = c.to_i.to_s.rjust 6, '0'
