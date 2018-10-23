@@ -17,7 +17,7 @@
            ASSIGN TO '.\TRANS-VENDAS.CBDB'
            ORGANIZATION IS LINE SEQUENTIAL.
        SELECT LISTAGEM-CONTROLE
-           ASSIGN TO '.\LISTAGEM-CONTROLE.TXT'
+           ASSIGN TO '.\LISTAGEM-CONTROLE.MD'
            ORGANIZATION IS LINE SEQUENTIAL.
        SELECT MESTRE-VENDAS-ATUAL
            ASSIGN TO '.\MESTRE-VENDAS-ATUAL.CBDB'
@@ -67,17 +67,17 @@
                10 ANO-ATUAL PIC 9999.
        01 CABECALHO-RELATORIO-2.
            05 PIC X(90) VALUE '| NR. VENDEDOR | ANO ANTERIOR          |
-      -'VALORES ATUAIS       | PROCESSO REALIZADO |'.
+      -'VALORES ATUAIS        | PROCESSO REALIZADO |'.
        01 CABECALHO-RELATORIO-3.
            05 PIC X(90) VALUE '|              | VENDAS    | COMISSAO  |
-      -'VENDAS   | COMISSAO  |                    |'.
+      -'VENDAS    | COMISSAO  |                    |'.
        01 CABECALHO-RELATORIO-4.
-           05 PIC X(90) VALUE '|--------------|-----------|-----------|-
-      -'---------|-----------|--------------------|'.
+           05 PIC X(90) VALUE '|--------------|-----------|-----------|
+      -'----------|-----------|--------------------|'.
        01 REG-MESTRE-OUT.
-           05 PIC XX VALUE '| '.
+           05 PIC XXX VALUE '|  '.
            05 NR-VENDEDOR-OUT PIC X(5).
-           05 PIC X(8) VALUE '      | '.
+           05 PIC X(9) VALUE '       | '.
            05 VALORES-ANO-ANT-OUT.
                10 VENDAS-OUT PIC $Z,ZZZ.99.
                10 PIC XXX VALUE ' | '.
