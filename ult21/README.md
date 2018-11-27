@@ -15,5 +15,5 @@ Especificações:
 
 - Nome: 10 alfanuméricos
 - Código: 2 alfanuméricos
-- Fone: 9 numéricos
+- Fone: 8 numéricos
 - Salário: 99999V99
